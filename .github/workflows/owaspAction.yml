@@ -14,7 +14,7 @@ jobs:
         run: echo 'Starting application'
 
       - name: ZAP Scan
-        uses: zaproxy/action-full-scan@2.15.0
+        uses: zaproxy/zap-stable@2.15.0
         with:
           target: 'https://app.sittax.com.br'
           fail_action: true
