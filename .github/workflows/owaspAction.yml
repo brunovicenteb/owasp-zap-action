@@ -3,6 +3,10 @@ name: OWASP ZAP Test
 on:
   # permite executar manualmente
   workflow_dispatch:
+    inputs:
+      endpoint:
+        type: string
+        description: Contra qual URL deseja realizar o Teste?
 
 jobs:
   test:
@@ -16,7 +20,7 @@ jobs:
       - name: ZAP Scan
         uses: zaproxy/action-full-scan@v0.10.0
         with:
-          target: 'https://app.sittax.com.br'
+          target: ${{ github.event.inputs.endpoint }}
           fail_action: true
 
       - name: Move files
@@ -25,11 +29,19 @@ jobs:
           mv ./report_html.html ./public/index.html
         if: always()
 
-      - name: Publish Report
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Upload UnitTest and Cover Reports as Artifacts
+        uses: actions/upload-artifact@v2.2.2
+        env:
+          TESTS_PROJECT_PATH: ${{ env.TESTS_PROJECT_PATH }}/TestResults/
         if: always()
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public
+          name: Relatorio
+          path: ./public
+          retention-days: 30
 
-            
+      # - name: Publish Report
+      #   uses: peaceiris/actions-gh-pages@v3
+      #   if: always()
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      #     publish_dir: ./public
